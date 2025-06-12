@@ -27,3 +27,8 @@ class NoteForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'rows': 4}),
         }
+
+class BookProgressForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ['pages_read', 'status']
