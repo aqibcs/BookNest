@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ book.title }} - BookNest{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
+            {% else %}
+            <img src="https://via.placeholder.com/300x400?text=No+Cover" class="card-img-top" alt="No Cover">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ book.author }}</h6>
+                
+                {% if book.status == 'to_read' %}
+                <span class="badge bg-warning">To Read</span>
+                {% elif book.status == 'reading' %}
+                <span class="badge bg-primary">Reading</span>
+                {% else %}
+                <span class="badge bg-success">Finished</span>
+                {% endif %}
+                
+                {% if book.description %}
+                <p class="card-text mt-3">{{ book.description }}</p>
+                {% endif %}
+                
+                <div class="mt-3">
+                    <p><strong>Pages:</strong> {{ book.pages }}</p>
+                    <p><strong>Added:</strong> {{ book.date_added|date:"F d, Y" }}</p>
+                    {% if book.date_finished %}
+                    <p><strong>Finished:</strong> {{ book.date_finished|date:"F d, Y" }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{% url 'book-update' book.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{% url 'book-delete' book.pk %}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        {% if book.status == 'reading' %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Reading Progress</h3>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3" style="height: 20px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ book.progress }}%;" 
+                        aria-valuenow="{{ book.progress }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ book.progress }}%
+                    </div>
+                </div>
+                <p>{{ book.pages_read }} of {{ book.pages }} pages read</p>
+                
+                <form method="POST" action="{% url 'update-progress' book.pk %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ progress_form.pages_read|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ progress_form.status|as_crispy_field }}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Update Progress</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Notes & Reviews</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% url 'add-note' book.pk %}">
+                    {% csrf_token %}
+                    {{ note_form|crispy }}
+                    <button type="submit" class="btn btn-primary mt-3">Add Note</button>
+                </form>
+                
+                <hr>
+                
+                {% if notes %}
+                <h4>Your Notes</h4>
+                {% for note in notes %}
+                <div class="card note-card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">{{ note.date_created|date:"F d, Y" }}</small>
+                            <a href="{% url 'delete-note' book.pk note.pk %}" class="text-danger">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                        <p class="card-text mt-2">{{ note.content }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-sticky-note fa-2x mb-3 text-muted"></i>
+                    <p>You haven't added any notes for this book yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
