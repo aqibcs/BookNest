@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}BookNest - Your Personal Reading Tracker{% endblock %}
+
+{% block content %}
+<div class="hero text-center">
+    <div class="container">
+        <h1><i class="fas fa-book-open"></i> BookNest</h1>
+        <p class="lead">Your personal reading tracker to organize your books and achieve your reading goals.</p>
+        {% if not user.is_authenticated %}
+        <div class="mt-4">
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-2">Get Started</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Login</a>
+        </div>
+        {% else %}
+        <div class="mt-4">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <div class="row text-center mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 p-4">
+                <div class="card-body">
+                    <i class="fas fa-book fa-3x mb-3 text-primary"></i>
+                    <h3>Track Your Books</h3>
+                    <p>Keep a record of books you've read, are currently reading, or plan to read in the future.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 p-4">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-3x mb-3 text-primary"></i>
+                    <h3>Set Reading Goals</h3>
+                    <p>Challenge yourself with yearly reading goals and track your progress throughout the year.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 p-4">
+                <div class="card-body">
+                    <i class="fas fa-sticky-note fa-3x mb-3 text-primary"></i>
+                    <h3>Add Notes & Reviews</h3>
+                    <p>Write personal notes and reviews for each book to remember your thoughts and impressions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            <h2>Organize Your Reading Journey</h2>
+            <p>BookNest helps you keep track of your entire reading collection in one place. Add books to your library, update your reading progress, and never lose track of what you're reading again.</p>
+            <p>With an intuitive interface and powerful features, managing your books has never been easier.</p>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/books.jpg' %}" alt="Books" class="img-fluid rounded shadow">
+        </div>
+    </div>
+
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6 order-md-2">
+            <h2>Achieve Your Reading Goals</h2>
+            <p>Set yearly reading goals and track your progress with visual indicators. BookNest helps you stay motivated and consistent with your reading habits.</p>
+            <p>Whether you want to read 12 books a year or 100, BookNest will help you reach your target.</p>
+        </div>
+        <div class="col-md-6 order-md-1">
+            <img src="{% static 'images/reading-goals.jpg' %}" alt="Reading Goals" class="img-fluid rounded shadow">
+        </div>
+    </div>
+</div>
+{% endblock %}
