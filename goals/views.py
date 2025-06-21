@@ -10,10 +10,10 @@ import datetime
 def goal_list(request):
     goals = ReadingGoal.objects.filter(user=request.user)
 
-    # Get or create current year's goal
     current_year = datetime.datetime.now().year
-    current_goal, created = ReadingGoal.objects.get_or_create(
-        user=request.user, year=current_year, defaults={'target_books': 12})
+    current_goal = ReadingGoal.objects.filter(
+        user=request.user, year=current_year
+    ).first()    
 
     context = {
         'goals': goals,
@@ -32,9 +32,9 @@ def goal_create(request):
             goal.user = request.user
 
             # Check if goal for this year already exists
-            existing_goal = ReadingGoal.objects.filter(user=request.user,
-                                                       year=goal.year).first()
-
+            existing_goal = ReadingGoal.objects.filter(
+                user=request.user, year=goal.year
+            ).first()
             if existing_goal:
                 messages.warning(
                     request,
@@ -44,14 +44,15 @@ def goal_create(request):
 
             goal.save()
             messages.success(
-                request, f'Reading goal for {goal.year} created successfully!')
+                request, f'Reading goal for {goal.year} created successfully!'
+            )
             return redirect('goal-list')
     else:
         form = ReadingGoalForm()
 
     return render(request, 'goals/goal_form.html', {
         'form': form,
-        'title': 'Create Goal'
+        'title': 'Create Goal',
     })
 
 
@@ -64,14 +65,15 @@ def goal_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(
-                request, f'Reading goal for {goal.year} updated successfully!')
+                request, f'Reading goal for {goal.year} updated successfully!'
+            )
             return redirect('goal-list')
     else:
         form = ReadingGoalForm(instance=goal)
 
     return render(request, 'goals/goal_form.html', {
         'form': form,
-        'title': 'Update Goal'
+        'title': 'Update Goal',
     })
 
 
@@ -82,7 +84,8 @@ def goal_delete(request, pk):
     if request.method == 'POST':
         goal.delete()
         messages.success(
-            request, f'Reading goal for {goal.year} deleted successfully!')
+            request, f'Reading goal for {goal.year} deleted successfully!'
+        )
         return redirect('goal-list')
 
     return render(request, 'goals/goal_confirm_delete.html', {'goal': goal})
