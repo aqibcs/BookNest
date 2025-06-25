@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Reading Goals - BookNest{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Reading Goals</h1>
+    <a href="{% url 'goal-create' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Goal
+    </a>
+</div>
+
+{% if current_goal %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title mb-0">{{ current_goal.year }} Reading Goal</h2>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3>{{ current_goal.books_finished }} of {{ current_goal.target_books }} books</h3>
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ current_goal.progress_percentage }}%;" 
+                                aria-valuenow="{{ current_goal.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                {{ current_goal.progress_percentage }}%
+                            </div>
+                        </div>
+                        <p>
+                            {% if current_goal.books_finished < current_goal.target_books %}
+                                You need {{ current_goal.target_books|add:"-"|add:current_goal.books_finished }} more books to reach your goal.
+                            {% else %}
+                                Congratulations! You've reached your goal of reading {{ current_goal.target_books }} books.
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{% url 'goal-update' current_goal.pk %}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Update Goal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    You haven't set a reading goal for this year yet.
+    <a href="{% url 'goal-create' %}" class="btn btn-sm btn-primary ms-2">Create One</a>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h2 class="card-title mb-0">All Reading Goals</h2>
+    </div>
+    <div class="card-body">
+        {% if goals %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Target</th>
+                        <th>Completed</th>
+                        <th>Progress</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for goal in goals %}
+                    <tr>
+                        <td>{{ goal.year }}</td>
+                        <td>{{ goal.target_books }} books</td>
+                        <td>{{ goal.books_finished }} books</td>
+                        <td>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: {{ goal.progress_percentage }}%;" 
+                                    aria-valuenow="{{ goal.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small>{{ goal.progress_percentage }}%</small>
+                        </td>
+                        <td>
+                            <a href="{% url 'goal-update' goal.pk %}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'goal-delete' goal.pk %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-chart-line fa-3x mb-3 text-muted"></i>
+            <h3>No reading goals found</h3>
+            <p>You haven't set any reading goals yet.</p>
+            <a href="{% url 'goal-create' %}" class="btn btn-primary mt-3">Set Your First Goal</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
