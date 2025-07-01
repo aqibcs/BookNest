@@ -1,9 +1,14 @@
 from django.shortcuts import render, redirect
-from users.forms import ProfileUpdateForm, UserLoginForm, UserRegisterForm, UserUpdateForm
 from django.contrib import messages
-from django.contrib.auth import login
-from django.contrib.auth import authenticate
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
+
+from users.forms import (
+    UserRegisterForm,
+    UserLoginForm,
+    UserUpdateForm,
+    ProfileUpdateForm,
+)
 
 
 def register(request):
@@ -12,9 +17,7 @@ def register(request):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
-            messages.success(
-                request,
-                f'Account created for {username}! You can now log in.')
+            messages.success(request, f'Account created for {username}. You can now log in.')
             return redirect('login')
     else:
         form = UserRegisterForm()
@@ -25,16 +28,18 @@ def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = UserLoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                messages.success(request, f"Welcome back, {username}!")
-                return redirect('home')  # Change as per your home URL name
+                messages.success(request, f'Welcome back, {username}!')
+                return redirect('home')
+            else:
+                messages.error(request, 'Invalid username or password')
     else:
         form = UserLoginForm()
 
@@ -50,7 +55,7 @@ def profile(request):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
-            messages.success(request, 'Your profile has been updated!')
+            messages.success(request, 'Your profile has been updated.')
             return redirect('profile')
     else:
         u_form = UserUpdateForm(instance=request.user)
